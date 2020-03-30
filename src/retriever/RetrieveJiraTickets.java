@@ -105,9 +105,8 @@ public class RetrieveJiraTickets {
 	 public static void main(String[] args){
 		
 		String projName = "PARQUET";
-		String path = "C:/Users/Alex/Desktop/Università/ISW2/Falessi/Progetto/Parquet/parquet-mr";
 		
-		String[] dates=retrieveFixDates(projName, path);
+		String[] dates=retrieveFixDates(projName, "C:/Users/Alex/Desktop/Università/ISW2/Falessi/Progetto/Parquet/parquet-mr");
 		LocalDate[] arrayOfDates = new LocalDate[dates.length];
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
