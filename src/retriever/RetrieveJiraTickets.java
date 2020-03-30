@@ -106,9 +106,10 @@ public class RetrieveJiraTickets {
 		LocalDate[] arrayOfDates = new LocalDate[dates.length];
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
-		try {
+		try (
 			FileWriter writer = new FileWriter("C:/Users/Alex/Desktop/Università/ISW2/Falessi/Progetto/RetrieveTickets/trunk/dates.csv");
-			CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+			CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);)
+		{
 			for(int i=0; i<dates.length; i++){
 				arrayOfDates[i] = LocalDate.parse(dates[i], formatter);
 			}
@@ -122,6 +123,7 @@ public class RetrieveJiraTickets {
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
+		
 		return;
 	 }
 	
