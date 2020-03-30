@@ -6,13 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.io.FileWriter;
@@ -26,6 +25,10 @@ import java.util.logging.Level;
 public class RetrieveJiraTickets {
 	
 	private static final Logger LOGGER = Logger.getLogger(RetrieveJiraTickets.class.getName());
+	
+	private RetrieveJiraTickets(){
+		//not called
+	}
 
 	   private static String readAll(Reader rd) throws IOException {
 		      StringBuilder sb = new StringBuilder();
@@ -36,25 +39,25 @@ public class RetrieveJiraTickets {
 		      return sb.toString();
 		   }
 
-	   public static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
+	   public static JSONArray readJsonArrayFromUrl(String url) throws IOException {
 	      InputStream is = new URL(url).openStream();
-	      try {
-	         BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+	      try (
+	    		  BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));) 
+	      {
 	         String jsonText = readAll(rd);
-	         JSONArray json = new JSONArray(jsonText);
-	         return json;
+	         return new JSONArray(jsonText);
 	       } finally {
 	         is.close();
 	       }
 	   }
 
-	   public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+	   public static JSONObject readJsonFromUrl(String url) throws IOException {
 	      InputStream is = new URL(url).openStream();
-	      try {
-	         BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-	         String jsonText = readAll(rd);
-	         JSONObject json = new JSONObject(jsonText);
-	         return json;
+	      try (
+	    		  BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));)
+	      {
+	         String jsonText = readAll(rd); 
+	         return new JSONObject(jsonText);
 	       } finally {
 	         is.close();
 	       }
@@ -62,11 +65,13 @@ public class RetrieveJiraTickets {
 
 
 	  
-	   public static String[] retrieveFixDates(String projName) {
+	   public static String[] retrieveFixDates(String projName, String path) {
 			   
 		   
 		   ArrayList<String> res = new ArrayList<>();
-		   Integer j = 0, i = 0, total = 1;
+		   Integer j = 0;
+		   Integer i = 0;
+		   Integer total = 1;
 		   
 	      //Get JSON API for closed bugs w/ AV in the project
 	      do {
@@ -83,9 +88,8 @@ public class RetrieveJiraTickets {
 	        	 for (; i < total && i < j; i++) {
 	        		 //Iterate through each bug
 	        		 String key = issues.getJSONObject(i%1000).get("key").toString();
-	        		 String lastDate=RetrieveGitLog.retrieveLastDate(key);
+	        		 String lastDate=RetrieveGitLog.retrieveLastDate(key, path);
 	        		 if (lastDate!=null) {
-	        			 //System.out.println(lastDate);
 	        			 res.add(lastDate);
 	        		 }
 	        	 }  
@@ -100,9 +104,10 @@ public class RetrieveJiraTickets {
 
 	 public static void main(String[] args){
 		
-		String projName ="PARQUET";
+		String projName = "PARQUET";
+		String path = "C:/Users/Alex/Desktop/Università/ISW2/Falessi/Progetto/Parquet/parquet-mr";
 		
-		String[] dates=retrieveFixDates(projName);
+		String[] dates=retrieveFixDates(projName, path);
 		LocalDate[] arrayOfDates = new LocalDate[dates.length];
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
@@ -118,13 +123,11 @@ public class RetrieveJiraTickets {
 				printer.printRecord(arrayOfDates[i]);
 			}
 		    printer.flush();
-		    printer.close();
 			
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		
-		return;
 	 }
 	
 }

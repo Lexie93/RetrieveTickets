@@ -8,11 +8,16 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class RetrieveGitLog {
-	private final static Logger LOGGER = Logger.getLogger(RetrieveGitLog.class.getName());
+	
+	private static final Logger LOGGER = Logger.getLogger(RetrieveGitLog.class.getName());
+	
+	private RetrieveGitLog(){
+		//not called
+	}
 
-	public static String retrieveLastDate(String ID){
-		ProcessBuilder pb = new ProcessBuilder("git", "log", "--date=short", "--pretty=format:\"%cd\"", "--max-count=1", "--grep=" + ID + " ", "--grep=" + ID + ":");
-		pb.directory(new File("C:/Users/Alex/Desktop/Università/ISW2/Falessi/Progetto/Parquet/parquet-mr"));
+	public static String retrieveLastDate(String id, String path){
+		ProcessBuilder pb = new ProcessBuilder("git", "log", "--date=short", "--pretty=format:\"%cd\"", "--max-count=1", "--grep=" + id + " ", "--grep=" + id + ":");
+		pb.directory(new File(path));
 		String line=null;
 		try {
 			Process process = pb.start();
