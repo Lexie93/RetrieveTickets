@@ -16,7 +16,7 @@ public class RetrieveGitLog {
 	}
 
 	public static String retrieveLastDate(String id, String path){
-		ProcessBuilder pb = new ProcessBuilder("git", "log", "--date=short", "--pretty=format:\"%cd\"", "--max-count=1", "--grep=" + id + " ", "--grep=" + id + ":");
+		ProcessBuilder pb = new ProcessBuilder("git", "log", "--date=short",  "--pretty=format:\"%cd\"", "--max-count=1", "--grep=" + id + "$", "--grep=" + id + "[^0-9]");
 		pb.directory(new File(path));
 		String line=null;
 		try {
